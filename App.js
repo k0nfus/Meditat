@@ -28,10 +28,12 @@ const HomeScreen = () => {
         setSound(sound);
         setIsPlaying(true);
       } catch (error) {
-        console.error("Error loading sound:", error); // Fehlermeldung loggen
+        console.error("Error loading sound:", error);
         alert('Fehler beim Laden der Audiodatei.');
+        return false; // Fehler beim Laden des Sounds
       }
     }
+    return true; // Erfolgreiches Laden des Sounds
   };
 
   const stopSound = async () => {
@@ -69,18 +71,18 @@ const HomeScreen = () => {
       alert('Bitte gib eine gültige Dauer in Minuten ein.');
       return;
     }
-
-    if (durationMinutes > 0) {
-      startTimer(durationMinutes);
-    }
-
+  
     if (selectedSound !== 'Stille') {
-      await playSound();
+      const soundLoaded = await playSound(); // Sound laden und starten
+      if (!soundLoaded) {
+        return; // Falls ein Fehler beim Laden auftritt, Meditation nicht starten
+      }
     } else {
-      setIsPlaying(true);
+      setIsPlaying(true); // Bei "Stille" direkt auf 'Playing' setzen
     }
-
-    setModalVisible(true);
+  
+    startTimer(durationMinutes); // Timer erst nach dem Laden des Sounds starten
+    setModalVisible(true); // Meditation starten (Modal anzeigen)
   };
 
   const manualStopMeditation = () => {
